@@ -1,6 +1,7 @@
 import json
 import logging
 import collections
+from datetime import datetime
 from requests_html import HTMLSession
 logger = logging.getLogger(__name__)
 from django.core.management.base import BaseCommand
@@ -33,6 +34,7 @@ class Command(BaseCommand):
 
         # Loop through the years...
         data_dict = collections.OrderedDict()
+        data_dict['last_updated'] = str(datetime.now())
         for year in year_list:
             # ... pull out the year number ...
             season = int(year.find("th", first=True).text)
