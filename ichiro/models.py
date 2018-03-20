@@ -8,5 +8,9 @@ class Scrape(models.Model):
     datetime = models.DateTimeField()
     json = models.TextField()
 
+    class Meta:
+        ordering = ("-datetime",)
+        get_latest_by = 'datetime'
+
     def __str__(self):
         return str(self.datetime)

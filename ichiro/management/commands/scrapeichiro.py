@@ -16,7 +16,7 @@ class Command(BaseCommand):
         ichiro_stats = self.get_ichiro_stats()
         # Write out to a JSON file
         obj = Scrape.objects.create(
-            datetime=ichiro_states['last_updated'],
+            datetime=ichiro_stats['last_updated'],
             json=json.dumps(ichiro_stats, indent=4)
         )
         print("Created {}".format(obj))
