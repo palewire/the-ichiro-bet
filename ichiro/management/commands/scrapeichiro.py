@@ -14,7 +14,7 @@ class Command(BaseCommand):
         # Scrape the stats
         ichiro_stats = self.get_ichiro_stats()
         # Write out to a JSON file
-        logger.debug("Writing to ichiro.json")
+        print("Writing to ichiro.json")
         json.dump(ichiro_stats, open(settings.ICHIRO_JSON, "w"), indent=4)
 
     def get_ichiro_stats(self):
@@ -26,7 +26,7 @@ class Command(BaseCommand):
         # Grab HTML from baseball-reference
         session = HTMLSession()
         ichiro_url = "https://www.baseball-reference.com/players/s/suzukic01.shtml"
-        logger.debug("Requesting {}".format(ichiro_url))
+        print("Requesting {}".format(ichiro_url))
         r = session.get(ichiro_url)
 
         # Drill down to the table with major league stats by year
@@ -39,7 +39,7 @@ class Command(BaseCommand):
         for year in year_list:
             # ... pull out the year number ...
             season = int(year.find("th", first=True).text)
-            logger.debug("- Scraping {}".format(season))
+            print("- Scraping {}".format(season))
             # ... pull out the stats we're looking for.
             data_dict[season] = dict(
               g=int(year.xpath("//td[@data-stat='G']", first=True).text),
