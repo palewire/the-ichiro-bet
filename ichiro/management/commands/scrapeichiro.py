@@ -3,6 +3,7 @@ import logging
 import collections
 from datetime import datetime
 from django.conf import settings
+from ichiro.models import Scrape
 from requests_html import HTMLSession
 from django.core.management.base import BaseCommand
 logger = logging.getLogger(__name__)
@@ -14,8 +15,11 @@ class Command(BaseCommand):
         # Scrape the stats
         ichiro_stats = self.get_ichiro_stats()
         # Write out to a JSON file
-        print("Writing to {}".format(settings.ICHIRO_JSON))
-        json.dump(ichiro_stats, open(settings.ICHIRO_JSON, "w"), indent=4)
+        obj = Scrape.objects.create(
+            datetime=ichiro_states['last_updated'],
+            json=json.dumps(ichiro_stats, indent=4)
+        )
+        print("Created {}".format(obj))
 
     def get_ichiro_stats(self):
         """
