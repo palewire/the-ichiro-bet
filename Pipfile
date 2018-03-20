@@ -9,7 +9,7 @@ verify_ssl = true
 django = "*"
 gunicorn = "*"
 django-heroku = "*"
-request_html = "*"
+requests_html = "*"
 
 [requires]
 
