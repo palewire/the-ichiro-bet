@@ -1,5 +1,11 @@
-from django.shortcuts import render
+from django.http import HttpResponse
 
 
 def index(request):
-    return render("ichiro/index.html", {})
+    """
+    The data.
+    """
+    file = open("ichiro.json", 'rb')
+    data = file.read()
+    file.close()
+    return HttpResponse(data, content_type="application/javascript")
