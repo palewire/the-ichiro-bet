@@ -2,9 +2,10 @@ import json
 import logging
 import collections
 from datetime import datetime
+from django.conf import settings
 from requests_html import HTMLSession
-logger = logging.getLogger(__name__)
 from django.core.management.base import BaseCommand
+logger = logging.getLogger(__name__)
 
 
 class Command(BaseCommand):
@@ -14,7 +15,7 @@ class Command(BaseCommand):
         ichiro_stats = self.get_ichiro_stats()
         # Write out to a JSON file
         logger.debug("Writing to ichiro.json")
-        json.dump(ichiro_stats, open("./ichiro.json", "w"), indent=4)
+        json.dump(ichiro_stats, open(settings.ICHIRO_JSON, "w"), indent=4)
 
     def get_ichiro_stats(self):
         """
