@@ -14,7 +14,7 @@ class Command(BaseCommand):
         # Scrape the stats
         ichiro_stats = self.get_ichiro_stats()
         # Write out to a JSON file
-        print("Writing to ichiro.json")
+        print("Writing to {}".format(settings.ICHIRO_JSON))
         json.dump(ichiro_stats, open(settings.ICHIRO_JSON, "w"), indent=4)
 
     def get_ichiro_stats(self):
