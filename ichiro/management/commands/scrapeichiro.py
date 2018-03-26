@@ -12,12 +12,14 @@ logger = logging.getLogger(__name__)
 class Command(BaseCommand):
 
     def handle(self, *args, **options):
+        now = str(datetime.now())
         # Scrape the stats
         data = self.get_ichiro_stats()
+        data.update(dict(last_updated=now))
         data.update(self.get_mariners_stats())
         # Write out to a JSON file
         obj = Scrape.objects.create(
-            datetime=str(datetime.now()),
+            datetime=now,
             json=json.dumps(data, indent=4)
         )
         print("Created {}".format(obj))
