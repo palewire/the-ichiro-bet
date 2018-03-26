@@ -13,13 +13,40 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         # Scrape the stats
-        ichiro_stats = self.get_ichiro_stats()
+        data = self.get_ichiro_stats()
+        data.update(self.get_mariners_stats())
         # Write out to a JSON file
         obj = Scrape.objects.create(
-            datetime=ichiro_stats['last_updated'],
-            json=json.dumps(ichiro_stats, indent=4)
+            datetime=str(datetime.now()),
+            json=json.dumps(data, indent=4)
         )
         print("Created {}".format(obj))
+
+    def get_mariners_stats(self):
+        """
+        Scrape some stats about the Mariners season is going. You know. For context.
+        """
+        # Grab the HTML
+        session = HTMLSession()
+        mariners_url = "https://www.baseball-reference.com/leagues/AL/2017.shtml"
+        print("Requesting {}".format(mariners_url))
+        r = session.get(mariners_url)
+
+        # Grab the table with team stats
+        table = r.html.find('table#teams_standard_batting', first=True)
+        # Grab all the rows
+        row_list = table.xpath("//tr")
+        # Loop through them
+        for row in row_list:
+            # Keep going until you get to the Mariners
+            team = row.find("th", first=True).text
+            if team == 'SEA':
+                print(" - Scraping {}".format(team))
+                # Then when you hit it return the number of games they've played so far.
+                return dict(
+                    mariners_games_played=int(row.xpath("//td[@data-stat='G']", first=True).text)
+                )
+
 
     def get_ichiro_stats(self):
         """
@@ -39,7 +66,6 @@ class Command(BaseCommand):
 
         # Loop through the years...
         data_dict = collections.OrderedDict()
-        data_dict['last_updated'] = str(datetime.now())
         for year in year_list:
             # ... pull out the year number ...
             season = int(year.find("th", first=True).text)
