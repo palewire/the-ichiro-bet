@@ -10,6 +10,7 @@ django = "*"
 gunicorn = "*"
 django-heroku = "*"
 requests_html = "*"
+django-cors-headers = "*"
 
 [requires]
 
