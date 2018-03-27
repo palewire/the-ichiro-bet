@@ -12,17 +12,42 @@ logger = logging.getLogger(__name__)
 class Command(BaseCommand):
 
     def handle(self, *args, **options):
-        now = str(datetime.now())
-        # Scrape the stats
-        data = self.get_ichiro_stats()
-        data.update(dict(last_updated=now))
+        # Pull the data
+        data = {}
+        data.update(dict(last_updated=str(datetime.now())))
+        data.update(dict(ichiro_logs=self.get_ichiro_logs()))
+        data.update(dict(ichiro_totals=self.get_ichiro_totals()))
         data.update(self.get_mariners_stats())
         # Write out to a JSON file
+        print(json.dumps(data, indent=4))
         obj = Scrape.objects.create(
-            datetime=now,
+            datetime=data['last_updated'],
             json=json.dumps(data, indent=4)
         )
         print("Created {}".format(obj))
+
+    def get_ichiro_logs(self):
+        year_dict = collections.OrderedDict(((i, {}) for i in range(2001, 2018)))
+        url_template = "https://www.baseball-reference.com/players/gl.fcgi?id=suzukic01&t=b&year={}"
+
+        for year in year_dict.keys():
+            session = HTMLSession()
+            url = url_template.format(year)
+            print("Requesting {}".format(url))
+            r = session.get(url)
+            table = r.html.find('table#batting_gamelogs', first=True)
+            game_list = table.xpath("//tr[starts-with(@id,'batting_gamelogs')]")
+            season_dict = collections.OrderedDict(((i, {'pa': 0, 'ab': 0, 'g': 0}) for i in range(1, 163)))
+            for game in game_list:
+                print("- Scraping {}".format(game))
+                team_game = int(game.xpath("//td[@data-stat='team_game_num']", first=True).attrs['csk'])
+                season_dict[team_game] = dict(
+                  g=1,
+                  pa=int(game.xpath("//td[@data-stat='PA']", first=True).text),
+                  ab=int(game.xpath("//td[@data-stat='AB']", first=True).text)
+                )
+            year_dict[year] = season_dict
+        return year_dict
 
     def get_mariners_stats(self):
         """
@@ -49,8 +74,7 @@ class Command(BaseCommand):
                     mariners_games_played=int(row.xpath("//td[@data-stat='G']", first=True).text)
                 )
 
-
-    def get_ichiro_stats(self):
+    def get_ichiro_totals(self):
         """
         Scrape a few Ichiro stats from baseball-reference.com.
 
