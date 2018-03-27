@@ -19,7 +19,6 @@ class Command(BaseCommand):
         data.update(dict(ichiro_totals=self.get_ichiro_totals()))
         data.update(self.get_mariners_stats())
         # Write out to a JSON file
-        print(json.dumps(data, indent=4))
         obj = Scrape.objects.create(
             datetime=data['last_updated'],
             json=json.dumps(data, indent=4)
