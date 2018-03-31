@@ -10,15 +10,24 @@ logger = logging.getLogger(__name__)
 
 
 class Command(BaseCommand):
+    help = "Scrape Ichiro's at-bat stats"
 
     def handle(self, *args, **options):
-        # Pull the data
-        data = {}
-        data.update(dict(last_updated=str(datetime.now())))
-        data.update(dict(ichiro_logs=self.get_ichiro_logs()))
-        data.update(dict(ichiro_totals=self.get_ichiro_totals()))
-        data.update(self.get_mariners_stats())
-        # Write out to a JSON file
+        self.now = str(datetime.now())
+        # Scrape data
+        self.mariners_stats = self.get_mariners_stats()
+        self.ichiro_totals = self.get_ichiro_totals()
+        self.ichiro_logs = self.get_ichiro_logs()
+
+        # Package it for storage
+        data = dict(
+            last_updated=self.now,
+            mariners_stats=self.mariners_stats,
+            ichiro_totals=self.ichiro_totals,
+            ichiro_logs=self.ichiro_logs,
+        )
+
+        # Write it to the database
         obj = Scrape.objects.create(
             datetime=data['last_updated'],
             json=json.dumps(data, indent=4)
@@ -36,7 +45,11 @@ class Command(BaseCommand):
             r = session.get(url)
             table = r.html.find('table#batting_gamelogs', first=True)
             game_list = table.xpath("//tr[starts-with(@id,'batting_gamelogs')]")
-            season_dict = collections.OrderedDict(((i, {'pa': 0, 'ab': 0, 'g': 0}) for i in range(1, 163)))
+            if year == 2018:
+                number_of_games = self.mariners_stats['mariners_games_played']
+            else:
+                number_of_games = 162
+            season_dict = collections.OrderedDict(((i, {'pa': 0, 'ab': 0, 'g': 0}) for i in range(1, number_of_games+1)))
             for game in game_list:
                 print("- Scraping {}".format(game))
                 team_game = int(game.xpath("//td[@data-stat='team_game_num']", first=True).attrs['csk'])
@@ -98,7 +111,6 @@ class Command(BaseCommand):
             # ... pull out the stats we're looking for.
             data_dict[season] = dict(
               g=int(year.xpath("//td[@data-stat='G']", first=True).text),
-              pa=int(year.xpath("//td[@data-stat='PA']", first=True).text),
               ab=int(year.xpath("//td[@data-stat='AB']", first=True).text)
             )
 
