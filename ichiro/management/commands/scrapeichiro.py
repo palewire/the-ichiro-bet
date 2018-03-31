@@ -26,10 +26,10 @@ class Command(BaseCommand):
         data = dict(
             last_updated=self.now,
             mariners_stats=self.mariners_stats,
+            steamer=self.steamer,
+            thebat=self.thebat,
             ichiro_totals=self.ichiro_totals,
             ichiro_logs=self.ichiro_logs,
-            steamer=self.steamer,
-            thebat=self.thebat
         )
 
         # Write it to the database
