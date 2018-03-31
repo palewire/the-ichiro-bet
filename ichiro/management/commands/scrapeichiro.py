@@ -3,8 +3,8 @@ import logging
 import collections
 from datetime import datetime
 from django.conf import settings
-from ichiro.models import Scrape
 from requests_html import HTMLSession
+from ichiro.models import Scrape, Projection
 from django.core.management.base import BaseCommand
 logger = logging.getLogger(__name__)
 
@@ -37,7 +37,9 @@ class Command(BaseCommand):
             datetime=data['last_updated'],
             json=json.dumps(data, indent=4)
         )
-        print("Created {}".format(obj))
+        Projection.objects.create(datetime=data['last_updated'], projection="steamer-update", ab=self.steamer)
+        Projection.objects.create(datetime=data['last_updated'], projection="the-bat-ros", ab=self.thebat)
+        print("Done!")
 
     def get_steamer(self):
         url = "https://www.fangraphs.com/projections.aspx?pos=of&stats=bat&type=steameru&team=11&lg=all&players=0"
