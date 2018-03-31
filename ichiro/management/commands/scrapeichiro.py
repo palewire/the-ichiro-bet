@@ -26,7 +26,7 @@ class Command(BaseCommand):
         print("Created {}".format(obj))
 
     def get_ichiro_logs(self):
-        year_dict = collections.OrderedDict(((i, {}) for i in range(2001, 2018)))
+        year_dict = collections.OrderedDict(((i, {}) for i in range(2001, 2019)))
         url_template = "https://www.baseball-reference.com/players/gl.fcgi?id=suzukic01&t=b&year={}"
 
         for year in year_dict.keys():
