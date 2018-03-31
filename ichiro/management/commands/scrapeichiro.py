@@ -54,7 +54,7 @@ class Command(BaseCommand):
         """
         # Grab the HTML
         session = HTMLSession()
-        mariners_url = "https://www.baseball-reference.com/leagues/AL/2017.shtml"
+        mariners_url = "https://www.baseball-reference.com/leagues/AL/2018.shtml"
         print("Requesting {}".format(mariners_url))
         r = session.get(mariners_url)
 
