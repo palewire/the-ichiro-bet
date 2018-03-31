@@ -14,10 +14,13 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         self.now = str(datetime.now())
+
         # Scrape data
         self.mariners_stats = self.get_mariners_stats()
         self.ichiro_totals = self.get_ichiro_totals()
         self.ichiro_logs = self.get_ichiro_logs()
+        self.steamer = self.get_steamer()
+        self.thebat = self.get_thebat()
 
         # Package it for storage
         data = dict(
@@ -25,6 +28,8 @@ class Command(BaseCommand):
             mariners_stats=self.mariners_stats,
             ichiro_totals=self.ichiro_totals,
             ichiro_logs=self.ichiro_logs,
+            steamer=self.steamer,
+            thebat=self.thebat
         )
 
         # Write it to the database
@@ -33,6 +38,34 @@ class Command(BaseCommand):
             json=json.dumps(data, indent=4)
         )
         print("Created {}".format(obj))
+
+    def get_steamer(self):
+        url = "https://www.fangraphs.com/projections.aspx?pos=of&stats=bat&type=steameru&team=11&lg=all&players=0"
+        session = HTMLSession()
+        print("Requesting {}".format(url))
+        r = session.get(url)
+        table = r.html.find('table#ProjectionBoard1_dg1_ctl00', first=True)
+        row_list = table.xpath("//tr")
+        for row in row_list[1:]:
+            player = row.find("td", first=True).text
+            if player == "Ichiro Suzuki":
+                cell_list = row.xpath("//td")
+                ab = int(cell_list[5].text)
+                return ab
+
+    def get_thebat(self):
+        url = "https://www.fangraphs.com/projections.aspx?pos=of&stats=bat&type=rthebat&team=11&lg=all&players=0"
+        session = HTMLSession()
+        print("Requesting {}".format(url))
+        r = session.get(url)
+        table = r.html.find('table#ProjectionBoard1_dg1_ctl00', first=True)
+        row_list = table.xpath("//tr")
+        for row in row_list[1:]:
+            player = row.find("td", first=True).text
+            if player == "Ichiro Suzuki":
+                cell_list = row.xpath("//td")
+                ab = int(cell_list[5].text)
+                return ab
 
     def get_ichiro_logs(self):
         year_dict = collections.OrderedDict(((i, {}) for i in range(2001, 2019)))
