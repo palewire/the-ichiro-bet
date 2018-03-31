@@ -23,7 +23,8 @@ class Projection(models.Model):
     datetime = models.DateTimeField()
     PROJECTION_CHOICES = (
         ('steamer-update', 'STEAMER (Update)'),
-        ('the-bat-ros', 'The Bat (RoS)')
+        ('the-bat-ros', 'The Bat (RoS)'),
+        ('the-bat-adjusted-ros', 'The Bat (Adjusted RoS)'),
     )
     projection = models.CharField(max_length=500, choices=PROJECTION_CHOICES)
     ab = models.IntegerField()

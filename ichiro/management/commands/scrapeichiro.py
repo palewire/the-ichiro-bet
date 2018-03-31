@@ -39,6 +39,11 @@ class Command(BaseCommand):
         )
         Projection.objects.create(datetime=data['last_updated'], projection="steamer-update", ab=self.steamer)
         Projection.objects.create(datetime=data['last_updated'], projection="the-bat-ros", ab=self.thebat)
+        Projection.objects.create(
+            datetime=data['last_updated'],
+            projection="the-bat-adjusted-ros",
+            ab=self.thebat + self.ichiro_totals[2018]['ab']
+        )
         print("Done!")
 
     def get_steamer(self):
