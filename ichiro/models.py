@@ -25,6 +25,9 @@ class Projection(models.Model):
         ('steamer-update', 'STEAMER (Update)'),
         ('the-bat-ros', 'The Bat (RoS)'),
         ('the-bat-adjusted-ros', 'The Bat (Adjusted RoS)'),
+        ('zips', 'ZiPS (Update)'),
+        ('depth-charts-ros', 'Depth Charts (RoS)'),
+        ('depth-charts-adjusted-ros', 'Depth Charts (Adjusted RoS)'),
     )
     projection = models.CharField(max_length=500, choices=PROJECTION_CHOICES)
     ab = models.IntegerField()

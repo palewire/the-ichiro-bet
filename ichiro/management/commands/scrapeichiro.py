@@ -21,6 +21,8 @@ class Command(BaseCommand):
         self.ichiro_logs = self.get_ichiro_logs()
         self.steamer = self.get_steamer()
         self.thebat = self.get_thebat()
+        self.zips = self.get_zips()
+        self.depthcharts = self.get_depthcharts()
 
         # Package it for storage
         data = dict(
@@ -28,6 +30,8 @@ class Command(BaseCommand):
             mariners_stats=self.mariners_stats,
             steamer=self.steamer,
             thebat=self.thebat,
+            zips=self.zips,
+            depthcharts=self.depthcharts,
             ichiro_totals=self.ichiro_totals,
             ichiro_logs=self.ichiro_logs,
         )
@@ -44,7 +48,42 @@ class Command(BaseCommand):
             projection="the-bat-adjusted-ros",
             ab=self.thebat + self.ichiro_totals[2018]['ab']
         )
+        Projection.objects.create(datetime=data['last_updated'], projection="zips-update", ab=self.zips)
+        Projection.objects.create(datetime=data['last_updated'], projection="depth-charts-ros", ab=self.depthcharts)
+        Projection.objects.create(
+            datetime=data['last_updated'],
+            projection="depth-charts-adjusted-ros",
+            ab=self.depthcharts + self.ichiro_totals[2018]['ab']
+        )
         print("Done!")
+
+    def get_depthcharts(self):
+        url = "https://www.fangraphs.com/projections.aspx?pos=of&stats=bat&type=rfangraphsdc&team=11&lg=all&players=0"
+        session = HTMLSession()
+        print("Requesting {}".format(url))
+        r = session.get(url)
+        table = r.html.find('table#ProjectionBoard1_dg1_ctl00', first=True)
+        row_list = table.xpath("//tr")
+        for row in row_list[1:]:
+            player = row.find("td", first=True).text
+            if player == "Ichiro Suzuki":
+                cell_list = row.xpath("//td")
+                ab = int(cell_list[5].text)
+                return ab
+
+    def get_zips(self):
+        url = "https://www.fangraphs.com/projections.aspx?pos=of&stats=bat&type=uzips&team=11&lg=all&players=0"
+        session = HTMLSession()
+        print("Requesting {}".format(url))
+        r = session.get(url)
+        table = r.html.find('table#ProjectionBoard1_dg1_ctl00', first=True)
+        row_list = table.xpath("//tr")
+        for row in row_list[1:]:
+            player = row.find("td", first=True).text
+            if player == "Ichiro Suzuki":
+                cell_list = row.xpath("//td")
+                ab = int(cell_list[5].text)
+                return ab
 
     def get_steamer(self):
         url = "https://www.fangraphs.com/projections.aspx?pos=of&stats=bat&type=steameru&team=11&lg=all&players=0"
