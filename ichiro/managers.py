@@ -8,17 +8,17 @@ class ProjectionManager(models.Manager):
         with connection.cursor() as cursor:
             cursor.execute("""
             SELECT
-                max_dates.projection,
-                max_dates.date,
+                distinct_dates.projection,
+                distinct_dates.date,
                 max_ab.ab
             FROM (
-                SELECT
+                SELECT DISTINCT
                     p.projection,
-                    MAX(date_trunc('day', p.datetime)) as date
+                    date_trunc('day', p.datetime) as date
                 FROM ichiro_projection p
                 GROUP BY 1
                 ORDER BY 1, 2 ASC
-            ) as max_dates
+            ) as distinct_dates
             INNER JOIN (
                 SELECT
                     p.projection,
@@ -28,8 +28,8 @@ class ProjectionManager(models.Manager):
                 GROUP BY 1, 2
                 ORDER BY 1, 2 ASC
             ) as max_ab
-            ON max_dates.projection = max_ab.projection
-            AND max_dates.date = max_ab.date
+            ON distinct_dates.projection = max_ab.projection
+            AND distinct_dates.date = max_ab.date
             """)
             return self._dictfetchall(cursor)
 
