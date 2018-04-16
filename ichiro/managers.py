@@ -8,12 +8,12 @@ class ProjectionManager(models.Manager):
         with connection.cursor() as cursor:
             cursor.execute("""
                 SELECT
-                    p.datetime,
                     p.projection,
-                    MAX(DATE_TRUNC('day', p.ab)) as ab
+                    MAX(date_trunc('day', p.datetime)),
+                    MAX(p.ab) as ab
                 FROM ichiro_projection p
-                GROUP BY p.datetime, p.projection
-                ORDER BY p.datetime, p.projection ASC""")
+                GROUP BY 1
+                ORDER BY 1, 2 ASC""")
             return self._dictfetchall(cursor)
 
     def _dictfetchall(self, cursor):
