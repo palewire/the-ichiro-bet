@@ -6,6 +6,7 @@ admin.autodiscover()
 
 
 urlpatterns = [
-    url(r'^$', ichiro.views.index, name='index'),
+    url(r'^$', ichiro.views.latest_scrape, name='index'),
+    url(r'^projections.json$', ichiro.views.projections_by_date, name='index'),
     path('admin/', admin.site.urls),
 ]
