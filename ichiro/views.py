@@ -1,4 +1,5 @@
 import json
+from ichiro import serializers
 from django.http import HttpResponse
 from ichiro.models import Scrape, Projection
 
@@ -16,4 +17,7 @@ def projections_by_date(request):
     A history of all the projection data by date.
     """
     obj = Projection.objects.by_date()
-    return HttpResponse(json.dumps(obj), content_type="application/javascript")
+    return HttpResponse(
+        json.dumps(obj, indent=4, default=serializers.json_serializer),
+        content_type="application/javascript"
+    )
