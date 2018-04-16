@@ -16,7 +16,6 @@ class ProjectionManager(models.Manager):
                     p.projection,
                     date_trunc('day', p.datetime) as date
                 FROM ichiro_projection p
-                GROUP BY 1
                 ORDER BY 1, 2 ASC
             ) as distinct_dates
             INNER JOIN (
