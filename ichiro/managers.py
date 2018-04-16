@@ -8,7 +8,7 @@ class ProjectionManager(models.Manager):
         with connection.cursor() as cursor:
             cursor.execute("""
             SELECT
-                max_dates.projection
+                max_dates.projection,
                 max_dates.date,
                 max_ab.ab
             FROM (
