@@ -1,4 +1,5 @@
 from django.db import models
+from ichiro import managers
 
 
 class Scrape(models.Model):
@@ -31,6 +32,7 @@ class Projection(models.Model):
     )
     projection = models.CharField(max_length=500, choices=PROJECTION_CHOICES)
     ab = models.IntegerField()
+    objects = managers.ProjectionManager()
 
     def __str__(self):
         return str(self.datetime)
