@@ -10,7 +10,7 @@ class ProjectionManager(models.Manager):
                 SELECT
                     p.datetime,
                     p.projection,
-                    MAX(DATE_TRUNC("day", p.ab)) as ab
+                    MAX(DATE_TRUNC('day', p.ab)) as ab
                 FROM ichiro_projection p
                 GROUP BY p.datetime, p.projection
                 ORDER BY p.datetime, p.projection ASC""")
