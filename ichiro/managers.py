@@ -9,7 +9,7 @@ class ProjectionManager(models.Manager):
             cursor.execute("""
             SELECT
                 distinct_dates.projection,
-                distinct_dates.date,
+                date(distinct_dates.date),
                 max_ab.ab
             FROM (
                 SELECT DISTINCT
@@ -28,7 +28,7 @@ class ProjectionManager(models.Manager):
                 ORDER BY 1, 2 ASC
             ) as max_ab
             ON distinct_dates.projection = max_ab.projection
-            AND distinct_dates.date = max_ab.date
+            AND distinct_dates.date = max_ab.date;
             """)
             return self._dictfetchall(cursor)
 
